@@ -10,18 +10,11 @@ const client = new Client({
     password: `${process.env.POSTGRES_PASSWORD}`,
     port: 2223
 })
-console.log(process.env.POSTGRES_PASSWORD)
+
 const execute = async (queries: Array<string>) =>{
     try{
         await client.connect()
-        // await queries.forEach((query)=>{
-        //     client.query(query)
-        //     console.info("Query")
-        // })
-        await client.query(queries[0])
-        await client.query(queries[1])
-        await client.query(queries[2])
-        await client.query(queries[3])
+        await client.query(queries.join(''))
         return true
     }catch(error: any){
         console.error(error.stack)
@@ -33,17 +26,28 @@ const execute = async (queries: Array<string>) =>{
 
 const queries = [
     `
+    alter table if exists "refresh_tokens"
+        drop constraint if exists "refresh_user";
+    `,
+    `
+    alter table if exists "users"
+        drop constraint if exists "user_refresh";
+    `,
+    `
+    DROP TABLE IF EXISTS "users";
+    `,
+    `
     CREATE TABLE IF NOT EXISTS "users" (
         "id" uuid DEFAULT gen_random_uuid (),
         "firstName" VARCHAR(100),
         "lastName" VARCHAR(100),
         "email" VARCHAR(100) NOT NULL UNIQUE,
         "username" VARCHAR(18) NOT NULL UNIQUE,
-        "password" TEXT,
+        "password" VARCHAR(250),
         "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
         "refresh_id" uuid,
         PRIMARY KEY ("id")
-    )
+    );
     `,
     `
     CREATE TABLE IF NOT EXISTS "refresh_tokens" (
@@ -51,7 +55,15 @@ const queries = [
         "token" TEXT,
         "userId" uuid,
         PRIMARY KEY ("id")
-    )
+    );
+    `,
+    `
+    alter table if exists "refresh_tokens"
+        drop constraint if exists "refresh_user";
+    `,
+    `
+    alter table if exists "users"
+        drop constraint if exists "user_refresh";
     `,
     `
     alter table if exists "refresh_tokens"
@@ -63,7 +75,7 @@ const queries = [
     alter table if exists "users"
         add constraint user_refresh
         foreign key ("refresh_id")
-        references refresh_tokens("id")
+        references refresh_tokens("id");
     `
     ]
 

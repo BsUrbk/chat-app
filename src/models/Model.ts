@@ -1,6 +1,9 @@
 import { Pool, Client } from 'pg'
+import dotenv from 'dotenv'
 
-class postgresClient{
+dotenv.config()
+
+class Model{
     private static pool: Pool = new Pool({
         user: `${process.env.POSTGRES_USER}`,
         host: `${process.env.HOSTNAME}`,
@@ -26,6 +29,6 @@ class postgresClient{
     }
 }
 
-export default postgresClient
+export default Model
 
 
