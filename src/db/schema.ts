@@ -30,10 +30,6 @@ const queries = [
         drop constraint if exists "refresh_user";
     `,
     `
-    alter table if exists "users"
-        drop constraint if exists "user_refresh";
-    `,
-    `
     DROP TABLE IF EXISTS "users";
     `,
     `
@@ -45,7 +41,6 @@ const queries = [
         "username" VARCHAR(18) NOT NULL UNIQUE,
         "password" VARCHAR(250),
         "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
-        "refresh_id" uuid,
         PRIMARY KEY ("id")
     );
     `,
@@ -62,21 +57,11 @@ const queries = [
         drop constraint if exists "refresh_user";
     `,
     `
-    alter table if exists "users"
-        drop constraint if exists "user_refresh";
-    `,
-    `
     alter table if exists "refresh_tokens"
         add constraint refresh_user
         foreign key ("userId")
         references users("id");
     `,
-    `
-    alter table if exists "users"
-        add constraint user_refresh
-        foreign key ("refresh_id")
-        references refresh_tokens("id");
-    `
     ]
 
 
