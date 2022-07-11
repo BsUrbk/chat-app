@@ -27,10 +27,10 @@ class RefreshToken extends Model{
         return token
     }
 
-    public static async DeleteToken(id: string){
+    public static async DeleteToken(token: string){
         const client = await RefreshToken.getPool().connect()
         const deleted = await client.query(`
-            DELETE FROM refresh_tokens WHERE id='${id}'
+            DELETE FROM refresh_tokens WHERE token='${token}'
         `).catch(err => {
             client.release()
             throw console.log(err)
