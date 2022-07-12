@@ -45,11 +45,13 @@ class User extends Model{
             if(auth){
                 let Refresh_Token = await new RefreshToken(user.rows[0].id).CreateToken()
                 let token = jwt.sign({user: username}, process.env.SECRET as string, {
-                    expiresIn: '30m',
+                    expiresIn: '1m',
                     algorithm: 'HS256'
                 })
                 return { token, Refresh_Token }
             }
+        }else{
+            return undefined
         }
 
     }

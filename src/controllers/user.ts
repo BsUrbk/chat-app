@@ -38,6 +38,8 @@ class UserController{
         if(req.cookies.REFRESH_TOKEN && req.cookies.BEARER_TOKEN && jwt.verify(req.cookies.BEARER_TOKEN, process.env.SECRET as string)){
             const check = await RefreshToken.DeleteToken(req.cookies.REFRESH_TOKEN)
             console.log(check)
+        }else{
+            return res.json({response: "Invalid json web tokens"})
         }
         return res.cookie("BEARER_TOKEN", "",{
             secure: false,

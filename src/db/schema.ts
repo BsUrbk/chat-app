@@ -33,6 +33,9 @@ const queries = [
     DROP TABLE IF EXISTS "users";
     `,
     `
+    DROP TABLE IF EXISTS "refresh_tokens";
+    `,
+    `
     CREATE TABLE IF NOT EXISTS "users" (
         "id" uuid DEFAULT gen_random_uuid (),
         "firstName" VARCHAR(100),
@@ -48,7 +51,7 @@ const queries = [
     CREATE TABLE IF NOT EXISTS "refresh_tokens" (
         "id" uuid DEFAULT gen_random_uuid (),
         "token" TEXT,
-        "userId" uuid,
+        "user_id" uuid,
         PRIMARY KEY ("id")
     );
     `,
@@ -59,7 +62,7 @@ const queries = [
     `
     alter table if exists "refresh_tokens"
         add constraint refresh_user
-        foreign key ("userId")
+        foreign key ("user_id")
         references users("id");
     `,
     ]

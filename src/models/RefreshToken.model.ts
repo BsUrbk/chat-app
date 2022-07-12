@@ -39,10 +39,27 @@ class RefreshToken extends Model{
         return deleted
     }
 
+    public static async getTokenUser(refresh_token: string){
+        const client = await RefreshToken.getPool().connect()
+        const user = await client.query(`
+            SELECT username FROM users INNER JOIN refresh_tokens ON users.id = refresh_tokens.user_id
+            WHERE refresh_tokens.token = '${refresh_token}'
+        `).catch(err =>{
+            client.release()
+            throw console.log(err)
+        })
+        client.release()
+        if(user.rowCount){
+            return user.rows[0].username
+        }
+        return undefined
+        
+    }
+
     public async getTokenId(){
         const client = await RefreshToken.getPool().connect()
         const id = await client.query(`
-            SELECT id FROM refresh_tokens WHERE userId='${this.user_id}'
+            SELECT id FROM refresh_tokens WHERE user_id='${this.user_id}'
         `).catch(err =>{
             client.release()
             throw console.log(err)
