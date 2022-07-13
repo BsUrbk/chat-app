@@ -55,6 +55,19 @@ class User extends Model{
         }
 
     }
+
+    public static async getUserId(username: string){
+        const client = await User.getPool().connect()
+        const user_id = await client.query(`
+            SELECT id from users WHERE username = '${username}'
+        `).catch(err => {
+            client.release()
+            throw console.log(err)
+        })
+        client.release()
+
+        return user_id.rows[0].id
+    }
 }
 
 export default User
