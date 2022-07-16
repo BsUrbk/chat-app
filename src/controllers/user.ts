@@ -23,7 +23,7 @@ class UserController{
             return res.cookie("BEARER_TOKEN", result.token,{
                 secure: false,
                 httpOnly: true,
-                expires: new Date(Date.now() + (1800 * 1000))
+                expires: new Date(Date.now() + (1800 * 1000)) //(1800 * 1000)
             }).cookie("REFRESH_TOKEN", result.Refresh_Token,{
                 secure: false,
                 httpOnly: true,
@@ -35,9 +35,13 @@ class UserController{
     }
 
     public async logout(req: Request, res: Response, next: NextFunction){
-        if(req.cookies.REFRESH_TOKEN && req.cookies.BEARER_TOKEN && jwt.verify(req.cookies.BEARER_TOKEN, process.env.SECRET as string)){
-            const check = await RefreshToken.DeleteToken(req.cookies.REFRESH_TOKEN)
-            console.log(check)
+        if(req.cookies.REFRESH_TOKEN && req.cookies.BEARER_TOKEN){
+            try{
+                jwt.verify(req.cookies.BEARER_TOKEN, process.env.SECRET as string)
+            }catch(err){
+                jwt.verify(res.locals.token, process.env.SECRET as string)
+            }
+            await RefreshToken.DeleteToken(req.cookies.REFRESH_TOKEN)
         }else{
             return res.json({response: "Invalid json web tokens"})
         }

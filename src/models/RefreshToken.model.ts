@@ -49,10 +49,8 @@ class RefreshToken extends Model{
             throw console.log(err)
         })
         client.release()
-        if(user.rowCount){
-            return user.rows[0].username
-        }
-        return undefined
+        
+        return user.rowCount ? user.rows[0].username : false
         
     }
 

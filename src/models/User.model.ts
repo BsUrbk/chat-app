@@ -45,7 +45,7 @@ class User extends Model{
             if(auth){
                 let Refresh_Token = await new RefreshToken(user.rows[0].id).CreateToken()
                 let token = jwt.sign({user: username}, process.env.SECRET as string, {
-                    expiresIn: '1m',
+                    expiresIn: '30m',
                     algorithm: 'HS256'
                 })
                 return { token, Refresh_Token }
@@ -66,7 +66,7 @@ class User extends Model{
         })
         client.release()
 
-        return user_id.rows[0].id
+        return user_id.rowCount ? user_id.rows[0].id : undefined
     }
 }
 

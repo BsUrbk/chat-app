@@ -24,5 +24,6 @@ router.post('/refresh', auth.refresh.bind(auth), (req, res) => {res.sendStatus(2
 router.post('/add-friend', auth.refresh.bind(auth), auth._isLoggedIn.bind(auth), friendsController.sendFriendRequest.bind(friendsController))
 router.post('/accept', auth.refresh.bind(auth), auth._isLoggedIn.bind(auth), friendsController.accept.bind(friendsController))
 router.post('/reject', auth.refresh.bind(auth), auth._isLoggedIn.bind(auth), friendsController.reject.bind(friendsController))
+router.post('/getall', friendsController.getAllFriends.bind(friendsController))
 
 export default router

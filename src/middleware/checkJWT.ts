@@ -21,17 +21,25 @@ class Auth{
     }
 
     public async refresh(req: Request, res: Response, next: NextFunction){
-        if(!req.cookies.BEARER_TOKEN && req.cookies.REFRESH_TOKEN){
+        let checkIfExpired = false
+        try{
+            jwt.verify(req.cookies.BEARER_TOKEN, process.env.SECRET as string)
+        }catch(err){
+            checkIfExpired = true
+        }
+        if((!req.cookies.BEARER_TOKEN || checkIfExpired) && req.cookies.REFRESH_TOKEN){
             const username = await RefreshToken.getTokenUser(req.cookies.REFRESH_TOKEN)
             const newToken = username ? jwt.sign({user: username}, process.env.SECRET as string, {
-                expiresIn: '1m',
+                expiresIn: '30m',
                 algorithm: 'HS256'
             }) : undefined
+            
             if(newToken){
-            return res.cookie("BEARER_TOKEN", newToken, {
+                res.locals.token = newToken
+                return res.cookie("BEARER_TOKEN", newToken, {
                 secure: false,
                 httpOnly: true,
-                expires: new Date(Date.now() + (1800 * 1000))
+                expires: new Date(Date.now() + (1800 * 1000)) //(1800 * 1000)
             }), next()
             }else{
                 return res.sendStatus(404)
@@ -43,7 +51,13 @@ class Auth{
     }
 
     public async _isLoggedIn(req: Request, res: Response, next: NextFunction){
-        if(req.cookies.BEARER_TOKEN && jwt.verify(req.cookies.BEARER_TOKEN, process.env.SECRET as string)){
+        if(req.cookies.BEARER_TOKEN){
+            try{
+                jwt.verify(req.cookies.BEARER_TOKEN, process.env.SECRET as string)
+            }catch(err){
+                const verify = jwt.verify(res.locals.token, process.env.SECRET as string)
+                return verify ? next() : res.json({response: "HOW"})
+            }
             return next()
         }else{
             return res.json("You're not logged in")

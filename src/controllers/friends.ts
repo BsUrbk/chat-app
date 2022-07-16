@@ -7,9 +7,11 @@ class FriendsController{
         const { user, friend } = req.body
         const user_id = await User.getUserId(user)
         const friend_id = await User.getUserId(friend)
-        const checkIfAlreadyFriends = await Friends.checkIfFriends(user_id, friend_id)
-        if(checkIfAlreadyFriends){
-            return res.json({response: "You are already friends"})
+        if(user_id && friend_id){
+            const checkIfAlreadyFriends = await Friends.checkIfFriends(user_id, friend_id)
+            if(checkIfAlreadyFriends){return res.json({response: "You are already friends"})}
+        }else{
+            return friend_id ? res.json({ response: "You are not a user" }) : res.json({ response: "Such person doesn't exist"})
         }
         const sendRequest = await new Friends(user_id, friend_id).sendRequest()
         if(sendRequest){
@@ -21,20 +23,33 @@ class FriendsController{
         const { user, friend } = req.body
         const user_id = await User.getUserId(user)
         const friend_id = await User.getUserId(friend)
-        const accepted = await Friends.accept(user_id, friend_id)
+        const receiver = await Friends.checkIfReceiver(user_id, friend_id, req.cookies.REFRESH_TOKEN)
+        const accepted = receiver ? await Friends.accept(user_id, friend_id) : false
         if(accepted){
             return res.json({ response: `You are now friends with ${friend}` })
         }
+        return res.json({ response: "That's not for you to decide"})
     }
-
+    
     public async reject(req: Request, res: Response, next: NextFunction){
         const { user, friend } = req.body
         const user_id = await User.getUserId(user)
         const friend_id = await User.getUserId(friend)
-        const accepted = await Friends.reject(user_id, friend_id)
+        const receiver = await Friends.checkIfReceiver(user_id, friend_id, req.cookies.REFRESH_TOKEN)
+        const accepted = receiver ? await Friends.reject(user_id, friend_id) : false
         if(accepted){
             return res.json({ response: `Friends invite from ${friend} has been rejected` })
         }
+        return res.json({ response: "That's not for you to decide"})
+    }
+
+    public async getAllFriends(req: Request, res: Response, next: NextFunction){
+        const all = await Friends.getAll()
+        let response = ""
+        all.rows.forEach(row =>{
+            response += row.user_id + " " + row.friend_id + " " + row.confirmed + "\r\n"
+        })
+        return res.json({ response: `${response}`})
     }
 }
 
