@@ -8,7 +8,7 @@ class schemaValidator{
         if(validate(data)){
             return data;
         }else{
-            return undefined;
+            return false;
         }
     }
 }

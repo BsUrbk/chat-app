@@ -24,9 +24,10 @@ class User extends Model{
             );
         `).catch(err => {
             client.release()
-            throw console.log(err)})
+            throw console.log(err)
+        })
         client.release()
-        return user
+        return true
     }
 
     public static async login({ username, password }: { username: string, password: string}){
@@ -38,11 +39,13 @@ class User extends Model{
             console.log(err)
         })
         client.release()
+        
         if(user){
             const db_password = user.rows[0].password
             const auth = await bcrypt.compare(password, db_password)
-
+            
             if(auth){
+                
                 let Refresh_Token = await new RefreshToken(user.rows[0].id).CreateToken()
                 let token = jwt.sign({user: username}, process.env.SECRET as string, {
                     expiresIn: '30m',

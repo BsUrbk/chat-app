@@ -12,6 +12,7 @@
         "rootDir": "./src",
         "esModuleInterop": true,
         "strict": true,
+        "moduleResolution": "Node",
         "resolveJsonModule": true,
         "typeRoots": [
             "src/types",

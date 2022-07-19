@@ -10,9 +10,21 @@ class UserController{
     public async register(req: Request, res: Response, next: NextFunction){
         const {firstName, lastName, email, username, password} = req.body
         const validate = await schemaValidator.validate(registerSchema, req.body)
-        const user = validate ? await new User(firstName, lastName, email, username, password).createUser().catch(next) : undefined
+        let user
+        if(validate){
+            user = await new User(firstName, lastName, email, username, password).createUser().catch(next)
+        }else{
+            user = validate
+        }
 
-        return user ? res.json({response: "User succesfully created, ", user}) : res.json({response: "Username/e-mail is already taken"})
+        switch(user){
+            case true:
+                return res.json({response: "User succesfully created"})
+            case false:
+                return res.json({response: "Invalid data"})
+            case undefined:
+                return res.json({response: "Username or email is already taken"})
+        }
     }
 
     public async login(req: Request, res: Response, next: NextFunction){
@@ -30,7 +42,7 @@ class UserController{
                 expires: new Date(Date.now() + (3600 * 1000 * 24 * 30))
             }).sendStatus(200)
         }else{
-            return res.json({response: "Username or password is invalid", result})
+            return res.json({response: "Username or password is invalid"})
         }
     }
 

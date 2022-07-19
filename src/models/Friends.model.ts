@@ -41,6 +41,7 @@ class Friends extends Model{
             client.release()
             throw console.log(err)
         })
+        client.release()
         if(owner.rowCount){
             if(owner.rows[0].user_id != user_id){
                 return false
@@ -59,7 +60,7 @@ class Friends extends Model{
             client.release()
             throw console.log(err)
         })
-        console.log(relationship)
+        client.release()
         return relationship
     }
     
@@ -72,7 +73,7 @@ class Friends extends Model{
             client.release()
             throw console.log(err)
         })
-        console.log(relationship)
+        client.release()
         return relationship
     }
 
@@ -85,6 +86,7 @@ class Friends extends Model{
             client.release()
             throw console.log(err)
         })
+        client.release()
         return all
     }
 
