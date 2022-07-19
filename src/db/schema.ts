@@ -25,9 +25,34 @@ const execute = async (queries: Array<string>) =>{
 }
 
 const queries = [
+    // `DELETE FROM friends;`,
+    // `DELETE FROM refresh_tokens;`,
+    // `DELETE FROM messages;`,
+    // `DELETE FROM chat;`,
+    // `DELETE FROM users;`,
     `
     alter table if exists "refresh_tokens"
         drop constraint if exists "refresh_user";
+    `,
+    `
+    alter table if exists "friends"
+        drop constraint if exists "friendship_1";
+    `,
+    `
+    alter table if exists "friends"
+        drop constraint if exists "friendship_2";
+    `,
+    `
+    alter table if exists "chat"
+        drop constraint if exists "chat_1";
+    `,
+    `
+    alter table if exists "chat"
+        drop constraint if exists "chat_2";
+    `,
+    `
+    alter table if exists "messages"
+        drop constraint if exists "messages";
     `,
     `
     DROP TABLE IF EXISTS "users";
@@ -41,7 +66,7 @@ const queries = [
         "firstName" VARCHAR(100),
         "lastName" VARCHAR(100),
         "email" VARCHAR(100) NOT NULL UNIQUE,
-        "username" VARCHAR(18) NOT NULL UNIQUE,
+        "username" VARCHAR(50) NOT NULL UNIQUE,
         "password" VARCHAR(250),
         "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
         PRIMARY KEY ("id")
