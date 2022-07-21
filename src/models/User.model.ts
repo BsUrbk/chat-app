@@ -9,29 +9,32 @@ class User extends Model{
     ){super()}
 
     public async createUser(){
-        const client = await User.getPool().connect()
-        const salt = await bcrypt.genSalt(10)
-        this.password = await bcrypt.hash(this.password, salt)
-        const user = await client.query(`
-            INSERT INTO users VALUES(
-                DEFAULT,
-                '${this.firstName}',
-                '${this.lastName}',
-                '${this.email}',
-                '${this.username}',
-                '${this.password}',
-                DEFAULT
-            );
-        `).catch(err => {
+        const client = await User.getPool()
+        if(client){
+            const salt = await bcrypt.genSalt(10)
+            this.password = await bcrypt.hash(this.password, salt)
+            await client.query(`
+                INSERT INTO users VALUES(
+                    DEFAULT,
+                    '${this.firstName}',
+                    '${this.lastName}',
+                    '${this.email}',
+                    '${this.username}',
+                    '${this.password}',
+                    DEFAULT
+                );
+            `).catch(err => {
+                client.release()
+                throw console.log(err)
+            })
             client.release()
-            throw console.log(err)
-        })
-        client.release()
-        return true
+            return true
+        }
+        return false
     }
 
     public static async login({ username, password }: { username: string, password: string}){
-        const client = await User.getPool().connect()
+        const client = await User.getPool()
         const user = await client.query(`
             SELECT id, username, password FROM users WHERE username='${username}'
         `).catch(err =>{
@@ -48,7 +51,7 @@ class User extends Model{
                 
                 let Refresh_Token = await new RefreshToken(user.rows[0].id).CreateToken()
                 let token = jwt.sign({user: username}, process.env.SECRET as string, {
-                    expiresIn: '30m',
+                    expiresIn: '1m',
                     algorithm: 'HS256'
                 })
                 return { token, Refresh_Token }
@@ -60,7 +63,7 @@ class User extends Model{
     }
 
     public static async getUserId(username: string){
-        const client = await User.getPool().connect()
+        const client = await User.getPool()
         const user_id = await client.query(`
             SELECT id from users WHERE username = '${username}'
         `).catch(err => {

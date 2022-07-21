@@ -96,7 +96,6 @@ const queries = [
         "id" uuid DEFAULT gen_random_uuid (),
         "friend_1" uuid,
         "friend_2" uuid,
-        "messages_id" uuid,
         PRIMARY KEY ("id")
     );
     `,

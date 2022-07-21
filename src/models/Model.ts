@@ -1,4 +1,4 @@
-import { Pool, Client } from 'pg'
+import { Pool, Client, PoolClient } from 'pg'
 import dotenv from 'dotenv'
 
 dotenv.config()
@@ -12,8 +12,16 @@ class Model{
         port: 2223
     })
     
-    protected static getPool(): Pool{
-        return this.pool
+    protected static async getPool(){
+        let connection: PoolClient
+        
+        connection = await this.pool.connect()
+        .catch(err => {
+            console.log(err)
+            return connection
+        })   
+        
+        return connection
     }
     
     private static client: Client = new Client({
@@ -24,8 +32,16 @@ class Model{
         port: 2223
     })
     
-    protected static getClient(): Client{
-        return this.client
+    protected static async getClient(){
+        let connection: Client | void
+
+        connection = await this.client.connect()
+        .catch(err => {
+            console.log(err)
+            return connection
+        })   
+        
+        return connection
     }
 }
 

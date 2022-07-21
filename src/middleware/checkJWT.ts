@@ -27,20 +27,21 @@ class Auth{
         }catch(err){
             checkIfExpired = true
         }
-        if((!req.cookies.BEARER_TOKEN || checkIfExpired) && req.cookies.REFRESH_TOKEN){
+        if((checkIfExpired && req.cookies.REFRESH_TOKEN) || req.cookies.REFRESH_TOKEN){
             const username = await RefreshToken.getTokenUser(req.cookies.REFRESH_TOKEN)
             const newToken = username ? jwt.sign({user: username}, process.env.SECRET as string, {
-                expiresIn: '30m',
+                expiresIn: '1m',
                 algorithm: 'HS256'
             }) : undefined
             
             if(newToken){
                 res.locals.token = newToken
-                return res.cookie("BEARER_TOKEN", newToken, {
+                res.cookie("BEARER_TOKEN", newToken, {
                 secure: false,
                 httpOnly: true,
-                expires: new Date(Date.now() + (1800 * 1000)) //(1800 * 1000)
-            }), next()
+                expires: new Date(Date.now() + 60000) //(1800 * 1000)
+                }) 
+                return next()
             }else{
                 return res.sendStatus(404)
             }
@@ -51,7 +52,7 @@ class Auth{
     }
 
     public async _isLoggedIn(req: Request, res: Response, next: NextFunction){
-        if(req.cookies.BEARER_TOKEN){
+        if(req.cookies.BEARER_TOKEN || res.locals.token){
             try{
                 jwt.verify(req.cookies.BEARER_TOKEN, process.env.SECRET as string)
             }catch(err){
