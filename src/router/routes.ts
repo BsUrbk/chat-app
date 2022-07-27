@@ -28,6 +28,7 @@ router.post('/accept', auth.refresh.bind(auth), auth._isLoggedIn.bind(auth), fri
 router.post('/reject', auth.refresh.bind(auth), auth._isLoggedIn.bind(auth), friendsController.reject.bind(friendsController))
 router.post('/chat', auth.refresh.bind(auth), auth._isLoggedIn.bind(auth), message.chatInstance.bind(message), (req, res) =>{ res.sendStatus(200) })
 router.post('/message', auth.refresh.bind(auth), auth._isLoggedIn.bind(auth), message.chatInstance.bind(message), message.sendMessage.bind(message))
+router.post('/getmessages', auth.refresh.bind(auth), auth._isLoggedIn.bind(auth), message.getMessages.bind(message))
 router.post('/getall', friendsController.getAllFriends.bind(friendsController))
 
 export default router

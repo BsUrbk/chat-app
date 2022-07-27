@@ -102,6 +102,7 @@ const queries = [
     `
     CREATE TABLE IF NOT EXISTS "messages" (
         "id" uuid DEFAULT gen_random_uuid (),
+        "author" uuid,
         "content" TEXT,
         "chat_id" uuid,
         "created_at" TIMESTAMP NOT NULL DEFAULT NOW(),
