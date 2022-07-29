@@ -30,7 +30,7 @@ class Auth{
         if((checkIfExpired && req.cookies.REFRESH_TOKEN) || req.cookies.REFRESH_TOKEN){
             const username = await RefreshToken.getTokenUser(req.cookies.REFRESH_TOKEN)
             const newToken = username ? jwt.sign({user: username}, process.env.SECRET as string, {
-                expiresIn: '1m',
+                expiresIn: '30m',
                 algorithm: 'HS256'
             }) : undefined
             
