@@ -39,7 +39,7 @@ class Auth{
                 res.cookie("BEARER_TOKEN", newToken, {
                 secure: false,
                 httpOnly: true,
-                expires: new Date(Date.now() + 60000) //(1800 * 1000)
+                expires: new Date(Date.now() + (1800 * 1000)) //(1800 * 1000)
                 }) 
                 return next()
             }else{

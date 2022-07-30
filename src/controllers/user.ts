@@ -35,7 +35,7 @@ class UserController{
             return res.cookie("BEARER_TOKEN", result.token,{
                 secure: false,
                 httpOnly: true,
-                expires: new Date(Date.now() + 60000) //(1800 * 1000)
+                expires: new Date(Date.now() + (1800 * 1000)) //(1800 * 1000)
             }).cookie("REFRESH_TOKEN", result.Refresh_Token,{
                 secure: false,
                 httpOnly: true,
